@@ -59,9 +59,9 @@ const getNumberOfLines = () => {
 const getBet = (balance, lines) => {
   while (true) {
     const bet = prompt(
-      `Enter your bet per line, must be within $${
-        balance / lines
-      } based on your balance: `
+      `Enter your bet per line, must be within $${(balance / lines).toFixed(
+        2
+      )} based on your balance: `
     );
     const numberBet = parseFloat(bet);
 
@@ -155,28 +155,34 @@ const getWinnings = (rows, bet, lines) => {
 };
 
 const game = () => {
-  let balance = deposit();
+  let balance = 0;
+  let playAgain = "y";
 
   while (true) {
-    console.log(`You have a balance of ${balance}`);
-    let lines = getNumberOfLines();
-    let bet = getBet(balance, lines);
-    balance -= bet * lines;
-    const reels = spin();
-    const rows = transpose(reels);
-    const styled = printRows(rows);
-    const winnings = getWinnings(rows, bet, lines);
-    balance += winnings;
-    console.log(`Congratulations! You won $${winnings}!`);
+    if (playAgain == "y") {
+      if (balance == 0) balance = deposit();
 
-    if (balance == 0){
-        console.log("You ran out of money!");
-        break;
-    } 
+      console.log(`You have a balance of ${balance}`);
+      let lines = getNumberOfLines();
+      let bet = getBet(balance, lines);
+      balance -= bet * lines;
+      const reels = spin();
+      const rows = transpose(reels);
+      const styled = printRows(rows);
+      const winnings = getWinnings(rows, bet, lines);
+      balance += winnings;
+      if (winnings > 0) {
+        console.log(`Congratulations! You won $${winnings}!`);
+      } else {
+        console.log(`You lose! Better luck next time`);
+      }
 
-    const playAgain = prompt("Do you want to play again? (y/n) ");
+      if (balance == 0) console.log("You ran out of money!");
+    } else if (playAgain == "n") {
+      break;
+    }
 
-    if (playAgain != "y") break;
+    playAgain = prompt("Do you want to play again? (y/n) ").toLowerCase();
   }
 };
 
